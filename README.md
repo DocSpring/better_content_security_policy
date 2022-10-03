@@ -1,3 +1,5 @@
+![Ruby CI builds](https://github.com/DocSpring/better_content_security_policy/actions/workflows/main.yml/badge.svg)
+
 # Better Content Security Policy
 
 This gem makes it easy to configure a dynamic `Content-Security-Policy` header for your Rails application.
