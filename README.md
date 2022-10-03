@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
   include BetterContentSecurityPolicy::HasContentSecurityPolicy
 ```
 
-Define a `#configure_content_security_policy` method to configure the default `Content-Security-Policy` header (also in `ApplicationController`):
+Define a `#configure_content_security_policy` method in `ApplicationController` to configure the default `Content-Security-Policy` rules:
 
 ```ruby
   def configure_content_security_policy
@@ -47,15 +47,15 @@ Define a `#configure_content_security_policy` method to configure the default `C
   end
 ```
 
-You can define the `#configure_content_security_policy` in any other controllers. Call `super` to inherit your default configuration from `ApplicationController`, or you can omit `super` to start from scratch.
+You can define more `#configure_content_security_policy` methods in any other controllers. Call `super` if you want to inherit your default configuration from ApplicationController. Otherwise, you can omit the call to `super` if you want to start from scratch with a new policy.
 
-You can now access `content_security_policy` in your controllers and views. After your response has been rendered, the `Content-Security-Policy` header will be added to the response.
+You are now able to access content_security_policy in your controllers and views. After you have finished rendering the response, an `after_action` callback will generate and add the `Content-Security-Policy` header.
 
 ## Examples
 
 #### Plausible Analytics
 
-Here is an example `HAML` partial that includes the JavaScript snippet for [Plausible Analytics](https://plausible.io/).
+Here's an example `HAML` partial that includes the JavaScript snippet for [Plausible Analytics](https://plausible.io/).
 
 ```haml
 # app/views/layouts/_plausible_analytics.html.haml
@@ -68,11 +68,11 @@ Here is an example `HAML` partial that includes the JavaScript snippet for [Plau
     window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
 ```
 
-Whenever you render this view partial, the `connect-src` and `script-src` directives will be added to your `Content-Security-Policy` header.
+Whenever this view partial is rendered, the connect-src and script-src directives will be automatically added to your `Content-Security-Policy` header.
 
 #### Gravatar Images
 
-You can override helper methods so that they will automatically add the required `Content-Security-Policy` rules. Here's the overridden helper method that I use to generate Gravatar image URLs:
+You can also override any helper methods that add resources from external sites, and update them so that they will automatically add the required `Content-Security-Policy` rules. Here's the overridden helper method that I use to generate Gravatar image URLs:
 
 ```ruby
   def gravatar_image_url(email, options = {})
@@ -82,7 +82,7 @@ You can override helper methods so that they will automatically add the required
   end
 ```
 
-> Note: It's fine to call this multiple times. Any duplicate entries will be removed.
+> Note: It's fine to call this method multiple times. Any duplicate entries are automatically removed.
 
 ## Nonces
 
