@@ -2,8 +2,8 @@
 
 # Better Content Security Policy
 
-This gem makes it easy to configure a dynamic `Content-Security-Policy` header for your Rails application.
-You can easily customize the rules in your controllers, and you can also update the rules in your views.
+This gem allows you to configure flexible and dynamic `Content-Security-Policy` headers for your Rails application.
+By default, Rails only allows you to configure one global Content Security Policy for your whole application, in `config/initializers/content_security_policy.rb`. This gem moves the CSP logic into your controllers and views, so you can create multiple unique policies for different controllers, or add new rules for a specific action.
 
 Read the MDN Web Docs to learn more about Content Security Policies: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 
