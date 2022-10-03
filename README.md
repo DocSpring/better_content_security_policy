@@ -51,7 +51,9 @@ You can define the `#configure_content_security_policy` in any other controllers
 
 You can now access `content_security_policy` in your controllers and views. After your response has been rendered, the `Content-Security-Policy` header will be added to the response.
 
-### Example
+## Examples
+
+#### Plausible Analytics
 
 Here is an example `HAML` partial that includes the JavaScript snippet for [Plausible Analytics](https://plausible.io/).
 
@@ -67,6 +69,20 @@ Here is an example `HAML` partial that includes the JavaScript snippet for [Plau
 ```
 
 Whenever you render this view partial, the `connect-src` and `script-src` directives will be added to your `Content-Security-Policy` header.
+
+#### Gravatar Images
+
+You can override helper methods so that they will automatically add the required `Content-Security-Policy` rules. Here's the overridden helper method that I use to generate Gravatar image URLs:
+
+```ruby
+  def gravatar_image_url(email, options = {})
+    content_security_policy.img_src 'https://secure.gravatar.com'
+    content_security_policy.img_src 'https://*.wp.com'
+    super
+  end
+```
+
+> Note: It's fine to call this multiple times. Any duplicate entries will be removed.
 
 ## Nonces
 
