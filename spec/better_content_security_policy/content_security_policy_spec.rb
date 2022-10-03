@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe BetterContentSecurityPolicy::CSP do
+RSpec.describe BetterContentSecurityPolicy::ContentSecurityPolicy do
   let(:csp) { described_class.new }
 
   it "has no default policy" do
@@ -29,7 +29,7 @@ RSpec.describe BetterContentSecurityPolicy::CSP do
       expect(csp.to_h).to eq(
         {
           "Content-Security-Policy" =>
-            "default-src 'self'; script-src 'self'; style-src 'self'; report-uri: /csp-report;"
+            "default-src 'self'; script-src 'self'; style-src 'self'; report-uri /csp-report;"
         }
       )
     end
@@ -40,7 +40,7 @@ RSpec.describe BetterContentSecurityPolicy::CSP do
       expect(csp.to_h).to eq(
         {
           "Content-Security-Policy-Report-Only" =>
-            "default-src 'self'; script-src 'self'; style-src 'self'; report-uri: /csp-report;"
+            "default-src 'self'; script-src 'self'; style-src 'self'; report-uri /csp-report;"
         }
       )
     end
@@ -51,8 +51,8 @@ RSpec.describe BetterContentSecurityPolicy::CSP do
       csp.style_src :none
       csp.report_uri = "https://example.com/csp-report"
       expect(csp.to_s).to eq(
-        "default-src 'self' 'unsafe-eval'; script-src 'self' https: https://example.com; " \
-        "style-src 'self' 'none'; report-uri: https://example.com/csp-report;"
+        "default-src 'self' 'self' 'unsafe-eval'; script-src 'self' 'self' https: https://example.com; " \
+        "style-src 'self' 'none'; report-uri https://example.com/csp-report;"
       )
     end
   end

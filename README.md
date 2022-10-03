@@ -1,7 +1,15 @@
 # Better Content Security Policy
 
-This gem makes it easy to configure a dynamic `Content-Security-Policy` header for your Rails application. 
+This gem makes it easy to configure a dynamic `Content-Security-Policy` header for your Rails application.
 You can easily customize the rules in your controllers, and you can also update the rules in your views.
+
+Read the MDN Web Docs to learn more about Content Security Policies: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+
+## Features
+
+- Configure a unique `Content-Security-Policy` header for different controllers and actions.
+- Add `Content-Security-Policy` rules next to the script tags in your views. Rendering a view partial will automatically add the CSP rules for that partial.
+- Still uses some features from Rails, such as `Rails.application.config.content_security_policy_nonce_generator` to generate nonce values.
 
 ## Installation
 
@@ -15,7 +23,60 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+Configure the nonce generator for Rails in `config/initializers/content_security_policy.rb`:
+
+```ruby
+Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
+```
+
+Include the `BetterContentSecurityPolicy::HasContentSecurityPolicy` concern in your `ApplicationController`:
+
+```ruby
+class ApplicationController < ActionController::Base
+  include BetterContentSecurityPolicy::HasContentSecurityPolicy
+```
+
+Define a `#configure_content_security_policy` method to configure the default `Content-Security-Policy` header (also in `ApplicationController`):
+
+```ruby
+  def configure_content_security_policy
+    content_security_policy.default_src :none
+    content_security_policy.font_src :self
+    content_security_policy.script_src :self, "nonce-#{content_security_policy_nonce}"
+    content_security_policy.style_src :self
+    content_security_policy.img_src :self
+    content_security_policy.connect_src :self
+    content_security_policy.prefetch_src :self
+    content_security_policy.report_uri = "http://example.com/csp_reports"
+    content_security_policy.report_only = true
+  end
+```
+
+You can define the `#configure_content_security_policy` in any other controllers. Call `super` to inherit your default configuration from `ApplicationController`, or you can omit `super` to start from scratch.
+
+You can now access `content_security_policy` in your controllers and views. After your response has been rendered, the `Content-Security-Policy` header will be added to the response.
+
+### Example
+
+Here is an example `ERB` partial that includes a JavaScript snippet for [Plausible Analytics](https://plausible.io/).
+
+```erb
+# app/views/layouts/_plausible_analytics.html.erb
+
+<% if PLAUSIBLE_ANALYTICS_HOST %>
+    <script defer data-domain="<%= local_assigns[:domain].presence || request.host %>" src="<%= PLAUSIBLE_ANALYTICS_HOST %>/js/script.js"></script>
+    <script nonce="<%= content_security_policy.nonce(:script) %>">
+        window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
+    </script>
+<%
+content_security_policy.connect_src PLAUSIBLE_ANALYTICS_HOST
+content_security_policy.script_src PLAUSIBLE_ANALYTICS_HOST
+%>
+<% end %>
+```
+
+Rendering this view partial will add `connect-src` and `script-src` sources for the Plausible Analytics host to the `Content-Security-Policy` header.
+A nonce is generated for the inline script tag that sets `window.plausible`, and this nonce is also added to the `Content-Security-Policy` header.
 
 ## Development
 
