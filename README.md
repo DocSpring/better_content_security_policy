@@ -7,8 +7,8 @@ Read the MDN Web Docs to learn more about Content Security Policies: https://dev
 
 ## Features
 
-- Configure a unique `Content-Security-Policy` header for different controllers and actions.
-- Add `Content-Security-Policy` rules next to the script tags in your views. Rendering a view partial will automatically add the CSP rules for that partial.
+- Configure unique `Content-Security-Policy` rules for different controllers and actions.
+- Configure `Content-Security-Policy` rules alongside `script` tags in your views, so that rendering a view partial will automatically add all of the required CSP rules for those resources.
 - Still uses some features from Rails, such as `Rails.application.config.content_security_policy_nonce_generator` to generate nonce values.
 
 ## Installation
@@ -23,12 +23,6 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-Configure the nonce generator for Rails in `config/initializers/content_security_policy.rb`:
-
-```ruby
-Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
-```
-
 Include the `BetterContentSecurityPolicy::HasContentSecurityPolicy` concern in your `ApplicationController`:
 
 ```ruby
@@ -42,11 +36,12 @@ Define a `#configure_content_security_policy` method to configure the default `C
   def configure_content_security_policy
     content_security_policy.default_src :none
     content_security_policy.font_src :self
-    content_security_policy.script_src :self, "nonce-#{content_security_policy_nonce}"
+    content_security_policy.script_src :self
     content_security_policy.style_src :self
     content_security_policy.img_src :self
     content_security_policy.connect_src :self
     content_security_policy.prefetch_src :self
+
     content_security_policy.report_uri = "http://example.com/csp_reports"
     content_security_policy.report_only = true
   end
@@ -58,25 +53,43 @@ You can now access `content_security_policy` in your controllers and views. Afte
 
 ### Example
 
-Here is an example `ERB` partial that includes a JavaScript snippet for [Plausible Analytics](https://plausible.io/).
+Here is an example `HAML` partial that includes the JavaScript snippet for [Plausible Analytics](https://plausible.io/).
 
-```erb
-# app/views/layouts/_plausible_analytics.html.erb
+```haml
+# app/views/layouts/_plausible_analytics.html.haml
 
-<% if PLAUSIBLE_ANALYTICS_HOST %>
-    <script defer data-domain="<%= local_assigns[:domain].presence || request.host %>" src="<%= PLAUSIBLE_ANALYTICS_HOST %>/js/script.js"></script>
-    <script nonce="<%= content_security_policy.nonce(:script) %>">
-        window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
-    </script>
-<%
-content_security_policy.connect_src PLAUSIBLE_ANALYTICS_HOST
-content_security_policy.script_src PLAUSIBLE_ANALYTICS_HOST
-%>
-<% end %>
+- if PLAUSIBLE_ANALYTICS_HOST
+  - content_security_policy.connect_src PLAUSIBLE_ANALYTICS_HOST
+  - content_security_policy.script_src PLAUSIBLE_ANALYTICS_HOST
+  = javascript_include_tag "#{PLAUSIBLE_ANALYTICS_HOST}/js/script.js", defer: true, data: { domain: local_assigns[:domain].presence || request.host }
+  = javascript_tag nonce: true do
+    window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }
 ```
 
-Rendering this view partial will add `connect-src` and `script-src` sources for the Plausible Analytics host to the `Content-Security-Policy` header.
-A nonce is generated for the inline script tag that sets `window.plausible`, and this nonce is also added to the `Content-Security-Policy` header.
+Whenever you render this view partial, the `connect-src` and `script-src` directives will be added to your `Content-Security-Policy` header.
+
+## Nonces
+
+This gem does not need to provide any extra functionality for working with `nonce` values. You can still set up the Rails nonce generator in `config/initializers/content_security_policy.rb`:
+
+```ruby
+
+Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
+```
+
+The Rails `content_security_policy?` method will return false since we are not using the CSP feature from Rails, so the `csp_meta_tag` helper will not work. You will need to create the meta tag manually:
+
+```
+<%= tag("meta", name: "csp-nonce", content: content_security_policy_nonce) %>
+```
+
+You must also manually set up the `nonce-*` value in your `#configure_content_security_policy` method:
+
+```ruby
+  def configure_content_security_policy
+    content_security_policy.script_src :self, "nonce-#{content_security_policy_nonce}"
+    # ...
+```
 
 ## Development
 
