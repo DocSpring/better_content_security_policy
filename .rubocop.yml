@@ -1,5 +1,8 @@
+require: rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.5
+  NewCops: enable
 
 Style/StringLiterals:
   Enabled: true
@@ -11,3 +14,10 @@ Style/StringLiteralsInInterpolation:
 
 Layout/LineLength:
   Max: 120
+
+RSpec/ExampleLength:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"

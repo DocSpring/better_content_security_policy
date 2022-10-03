@@ -6,19 +6,21 @@ Gem::Specification.new do |spec|
   spec.name = "better_content_security_policy"
   spec.version = BetterContentSecurityPolicy::VERSION
   spec.authors = ["Nathan Broadbent"]
-  spec.email = ["git@ndbroadbent.com"]
+  spec.email = ["nathan@docspring.com"]
 
-  spec.summary = "TODO: Write a short summary, because RubyGems requires one."
-  spec.description = "TODO: Write a longer description or delete this line."
-  spec.homepage = "TODO: Put your gem's website or public repo URL here."
+  spec.summary = "Configure a dynamic Content-Security-Policy header that you can customize in your controllers."
+  spec.description = "This gem makes it easy to configure a dynamic Content-Security-Policy header " \
+                     "for your Rails application. You can easily customize the rules in your controllers, " \
+                     "and you can also update the rules in your views."
+  spec.homepage = "https://github.com/DocSpring/better_content_security_policy"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.5.0"
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "TODO: Put your gem's public repo URL here."
-  spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
+  spec.metadata["source_code_uri"] = "https://github.com/DocSpring/better_content_security_policy"
+  spec.metadata["changelog_uri"] = "https://github.com/DocSpring/better_content_security_policy/blob/master/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -31,9 +33,9 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
-
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata["rubygems_mfa_required"] = "true"
+
+  spec.add_dependency "rails", ">= 5.0.0"
 end

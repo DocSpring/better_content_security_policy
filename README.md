@@ -1,8 +1,7 @@
-# BetterContentSecurityPolicy
+# Better Content Security Policy
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/better_content_security_policy`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem makes it easy to configure a dynamic `Content-Security-Policy` header for your Rails application. 
+You can easily customize the rules in your controllers, and you can also update the rules in your views.
 
 ## Installation
 

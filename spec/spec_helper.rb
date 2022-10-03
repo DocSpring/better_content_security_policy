@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "rails"
 require "better_content_security_policy"
 
 RSpec.configure do |config|
