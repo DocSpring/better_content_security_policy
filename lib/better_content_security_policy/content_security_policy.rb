@@ -81,7 +81,8 @@ module BetterContentSecurityPolicy
 
       kebab_source = kebab_case(dsl_source)
       return "'#{kebab_source}'" if QUOTED_SOURCES.include?(kebab_source)
-      return "'#{dsl_source}'" if dsl_source.start_with?("nonce-")
+      return "'#{dsl_source}'" if dsl_source.start_with?("nonce-") ||
+                                  dsl_source.start_with?("sha256-")
 
       dsl_source
     end
