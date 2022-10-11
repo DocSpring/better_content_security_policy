@@ -10,6 +10,8 @@ module BetterContentSecurityPolicy
     extend ActiveSupport::Concern
 
     included do
+      private :set_content_security_policy_header, :content_security_policy
+
       helper_method :content_security_policy
       before_action :configure_content_security_policy
       after_action :set_content_security_policy_header
