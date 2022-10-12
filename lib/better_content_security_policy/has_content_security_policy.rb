@@ -6,6 +6,7 @@ module BetterContentSecurityPolicy
   # Include this module in your ApplicationController to configure a dynamic Content Security Policy.
   # The header will be set in an after_action after the response has been rendered.
   # This means that you can also modify the policy in your views.
+  # You must call 'after_action :set_content_security_policy_header' in your own controller.
   module HasContentSecurityPolicy
     extend ActiveSupport::Concern
 
@@ -14,7 +15,6 @@ module BetterContentSecurityPolicy
 
       helper_method :content_security_policy
       before_action :configure_content_security_policy
-      after_action :set_content_security_policy_header
     end
 
     def content_security_policy

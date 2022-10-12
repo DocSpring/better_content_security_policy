@@ -25,11 +25,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-Include the `BetterContentSecurityPolicy::HasContentSecurityPolicy` concern in your `ApplicationController`:
+Include the `BetterContentSecurityPolicy::HasContentSecurityPolicy` concern in your `ApplicationController`,
+and the line `after_action :set_content_security_policy_header`.
 
 ```ruby
 class ApplicationController < ActionController::Base
   include BetterContentSecurityPolicy::HasContentSecurityPolicy
+  after_action :set_content_security_policy_header
 ```
 
 Define a `#configure_content_security_policy` method in `ApplicationController` to configure the default `Content-Security-Policy` rules:
