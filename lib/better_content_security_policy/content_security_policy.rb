@@ -65,8 +65,8 @@ module BetterContentSecurityPolicy
       @directives[directive]
     end
 
-    def respond_to_missing?(directive)
-      valid_directive?(directive)
+    def respond_to_missing?(directive, *)
+      valid_directive?(directive) || super
     end
 
     # Converts sources from our Ruby DSL (camelcase) into proper Content-Security-Policy sources.
