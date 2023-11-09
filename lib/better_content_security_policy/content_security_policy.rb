@@ -12,15 +12,21 @@ module BetterContentSecurityPolicy
       default-src
       font-src
       form-action
+      frame-ancestors
       frame-src
       img-src
       manifest-src
       media-src
-      navigate-to
       object-src
       prefetch-src
+      require-trusted-types-for
       script-src
+      script-src-attr
+      script-src-elem
       style-src
+      style-src-attr
+      style-src-elem
+      trusted-types
       worker-src
     ].freeze
 
@@ -31,6 +37,8 @@ module BetterContentSecurityPolicy
       http
       https
       mediastream
+      ws
+      wss
     ].freeze
 
     QUOTED_SOURCES = %w[
@@ -39,7 +47,10 @@ module BetterContentSecurityPolicy
       unsafe-eval
       unsafe-hashes
       unsafe-inline
-      wasm-unsafe-eval
+      allow-duplicates
+      report-sample
+      script
+      strict-dynamic
     ].freeze
 
     attr_accessor :directives, :report_uri, :report_only
