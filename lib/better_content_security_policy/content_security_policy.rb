@@ -76,7 +76,7 @@ module BetterContentSecurityPolicy
       @directives[directive]
     end
 
-    def respond_to_missing?(directive, *)
+    def respond_to_missing?(directive, include_all = false)
       valid_directive?(directive) || super
     end
 
